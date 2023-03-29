@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
+from starlette.responses import FileResponse 
 from pydantic import BaseModel
 
 import httpx
@@ -13,9 +13,7 @@ OPENAI_API_KEY = os.environ['OPENAI_API_KEY']
 
 app = FastAPI()
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
-
-templates = Jinja2Templates(directory="templates")
+app.mount("/static", StaticFiles(directory="../client/build/static"), name="static")
 
 class LevelData(BaseModel):
     question: str
@@ -31,7 +29,7 @@ LEVELS = [
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+    return FileResponse('../client/build/index.html')
 
 @app.get("/level/{level_id}")
 async def get_level(level_id: int) -> LevelData:
